@@ -1,0 +1,13 @@
+torch
+transformers
+datasets
+numpy
+pandas
+nltk
+tqdm
+scikit-learn
+keybert
+sentence-transformers
+rouge-score
+bert-score
+rake-nltk

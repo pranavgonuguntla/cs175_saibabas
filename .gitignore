@@ -1,0 +1,5 @@
+*.pth
+/gpt2_yelp_finetuned
+/.vscode
+/__pycache__
+/cache
