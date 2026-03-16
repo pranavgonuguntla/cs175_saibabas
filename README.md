@@ -45,7 +45,22 @@ Keywords are extracted from reviews using [KeyBERT](https://github.com/MaartenGr
 ```
 
 ---
+## Libraries used
 
+- **torch** — PyTorch (https://pytorch.org/)
+- **transformers** — Hugging Face Transformers (https://github.com/huggingface/transformers)
+- **datasets** — Hugging Face Datasets (https://huggingface.co/datasets)
+- **numpy** — NumPy (https://numpy.org/)
+- **pandas** — Pandas (https://pandas.pydata.org/)
+- **nltk** — Natural Language Toolkit (https://www.nltk.org/)
+- **tqdm** — Progress bars (https://github.com/tqdm/tqdm)
+- **scikit-learn** — Machine learning utilities (https://scikit-learn.org/)
+- **keybert** — KeyBERT keyword extraction (https://github.com/MaartenGr/KeyBERT)
+- **sentence-transformers** — Sentence embeddings for KeyBERT (https://www.sbert.net/)
+- **rouge-score** — ROUGE evaluation (https://pypi.org/project/rouge-score/)
+- **bert-score** — BERTScore evaluation (https://github.com/Tiiiger/bert_score)
+- **rake-nltk** — RAKE keyword extraction (https://pypi.org/project/rake-nltk/)
+  
 ## Setup
 
 ```bash
