@@ -60,6 +60,11 @@ Keywords are extracted from reviews using [KeyBERT](https://github.com/MaartenGr
 - **rouge-score** — ROUGE evaluation (https://pypi.org/project/rouge-score/)
 - **bert-score** — BERTScore evaluation (https://github.com/Tiiiger/bert_score)
 - **rake-nltk** — RAKE keyword extraction (https://pypi.org/project/rake-nltk/)
+
+## Publicly available code used or adapted
+- No external code was used or adapted; implementation from scratch with reference to the links below.
+- https://github.com/kuleshov-group/mdlm
+
   
 ## Setup
 
