@@ -11,3 +11,4 @@ sentence-transformers
 rouge-score
 bert-score
 rake-nltk
+matplotlib

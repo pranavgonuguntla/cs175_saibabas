@@ -1,3 +1,24 @@
+"""
+data/preprocessing.py — Text normalization and length filtering for Yelp reviews.
+
+Provides a minimal, lossless preprocessing pipeline used consistently across
+training, keyword extraction, and evaluation so that every component sees
+identical text.
+
+Pipeline (applied in order by preprocess_review):
+  1. Unicode normalization (NFKC) — collapses ligatures, full-width chars, etc.
+  2. Whitespace standardization — replaces newlines/tabs with spaces, collapses runs.
+  3. Character-level clipping (MAX_CHARS) — fast early truncation before tokenization.
+  4. Word-token-level clipping (MAX_WORD_TOKENS via NLTK) — controls sequence length
+     at the word level as a proxy before BPE tokenization.
+
+passes_length_filter() is used during dataset construction to discard reviews
+that are too short to carry meaningful signal or too long to fit in the model's
+context window even after clipping.
+
+Note: text is intentionally NOT lowercased here; downstream components (KeyBERT,
+the GPT-2 tokenizer) handle case in their own way.
+"""
 import re
 import unicodedata
 import nltk

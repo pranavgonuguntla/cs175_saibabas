@@ -1,6 +1,32 @@
 """
-Train the MDLM (Masked Diffusion Language Model) on the Yelp dataset.
-Run: python train_mdlm.py
+train_mdlm.py — Train the MDLM masked diffusion model on Yelp reviews.
+
+Trains a bidirectional transformer (MDLMTransformer) using the masked discrete
+diffusion objective on the yelp_polarity dataset. The model learns to denoise
+randomly masked token sequences conditioned on keyword+sentiment prompts via
+classifier-free guidance (CFG).
+
+Training details:
+  - Dataset: up to 560k train / 38k validation examples from yelp_polarity.
+  - Batch size: 64, 10 epochs, AdamW (lr=1e-4, weight_decay=0.01).
+  - Scheduler: CosineAnnealingLR over 10 epochs.
+  - Noise schedule: cosine masking probability per example per step.
+  - CFG dropout: 15% of training examples use a null prompt so the model
+    learns both conditional and unconditional denoising.
+  - Gradient clipping: max_norm=1.0.
+  - Validation: masked diffusion loss (same objective as training) computed
+    each epoch to match what is reported in the notebook.
+
+Outputs (written to project root):
+  - mdlm_model.pth       — model state_dict
+  - mdlm_tokenizer/      — GPT-2 BPE tokenizer with [MASK] and <PAD> tokens
+  - cache/keyword_cache.json — KeyBERT keyword cache flushed after training
+
+After training, runs a generation demo across 5 keyword prompts × 10 guidance
+scales and prints a summary table.
+
+Run from the project root:
+    python src/train_mdlm.py
 """
 import torch
 import numpy as np
@@ -161,7 +187,9 @@ def main():
 
     model.eval()
     torch.save(model.state_dict(), "mdlm_model.pth")
+    tokenizer.save_pretrained("mdlm_tokenizer")
     print("    Model saved to mdlm_model.pth")
+    print("    Tokenizer saved to mdlm_tokenizer/")
     flush_keyword_cache()
 
     # 5 diverse keyword prompts covering different sentiments and aspects

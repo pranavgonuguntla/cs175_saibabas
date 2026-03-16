@@ -1,3 +1,29 @@
+"""
+model/transformer.py — MDLMTransformer: the bidirectional denoising model.
+
+Defines the neural network architecture used as the backbone of the masked
+diffusion model. Given a (possibly masked) token sequence and an optional
+keyword conditioning signal, it predicts a probability distribution over the
+vocabulary at every position.
+
+Architecture:
+  - Token embedding + learned positional embedding (both size d_model=768).
+  - AdaLN (Adaptive Layer Norm): the keyword prompt is embedded, mean-pooled,
+    projected, and used to compute per-position scale/shift parameters. AdaLN
+    is applied both before the transformer stack (to steer the input
+    representation) and after it (to steer the output representation), giving
+    the conditioning signal two opportunities to influence generation.
+  - PyTorch TransformerEncoder (8 layers, 12 heads, GELU, Pre-LN / norm_first).
+    enable_nested_tensor=False is set explicitly because norm_first=True
+    disables the nested-tensor optimisation anyway, suppressing the warning.
+  - Linear output projection back to vocab_size logits.
+
+Weight init: normal(0, 0.02) for all Linear and Embedding layers (GPT-style);
+AdaLN projection is zero-initialised so conditioning starts as identity.
+
+Used by: model/diffusion.py (train_step, sample_mdlm), train_mdlm.py,
+         evaluate.py, generate.py, plot_guidance.py.
+"""
 import torch
 import torch.nn as nn
 import math
@@ -34,7 +60,7 @@ class MDLMTransformer(nn.Module):
             d_model=d_model, nhead=nhead, dim_feedforward=dim_feedforward,
             dropout=dropout, activation='gelu', batch_first=True, norm_first=True
         )
-        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers)
+        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers, enable_nested_tensor=False)
         self.output_layer = nn.Linear(d_model, vocab_size)
         self._init_weights()
 

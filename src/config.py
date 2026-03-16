@@ -1,3 +1,17 @@
+"""
+config.py — Shared configuration and constants for the entire project.
+
+Sets global random seeds for reproducibility (torch, numpy, Python random),
+selects the compute device (CUDA > Apple Silicon MPS > CPU), and defines all
+hyperparameters used across training, evaluation, and data processing.
+
+Any value that appears in more than one script lives here so there is a single
+source of truth. Import individual constants rather than importing the module
+as a whole to keep namespaces clean.
+
+Run order: imported at the top of every other script; executes immediately on
+import (seed setting and device detection happen at module load time).
+"""
 import os
 import random
 import numpy as np

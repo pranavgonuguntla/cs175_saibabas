@@ -1,3 +1,34 @@
+"""
+model/diffusion.py — Masked diffusion forward process, training step, and sampler.
+
+Implements the core MDLM (Masked Diffusion Language Model) logic:
+
+  get_mask_prob(t, schedule)
+    Maps a continuous noise level t ∈ [0, 1] to a masking probability using a
+    cosine schedule (default) or linear schedule. At t=0 the sequence is
+    fully unmasked; at t=1 it is fully masked.
+
+  create_masked_input(clean_tokens, mask_token_id, mask_prob, attention_mask)
+    Applies token-level masking stochastically given a per-example mask_prob.
+    Only real (non-pad) positions are eligible for masking when attention_mask
+    is provided.
+
+  train_step(model, batch, optimizer, mask_token_id, schedule, device)
+    One gradient update. Samples a random noise level t per example, masks
+    the input accordingly, runs the model, computes cross-entropy loss only
+    on the masked positions, clips gradients (max_norm=1.0), and steps the
+    optimizer. Returns (loss, accuracy) scalars.
+
+  sample_mdlm(model, tokenizer, keywords, n_steps, guidance_scale, ...)
+    Iterative confidence-based unmasking (masked diffusion sampling):
+      1. Start from a fully masked sequence.
+      2. At each step, run the model to get per-position token probabilities.
+      3. If guidance_scale > 1.0, apply classifier-free guidance:
+             logits = logits_uncond + γ * (logits_cond - logits_uncond)
+      4. Among currently masked positions, unmask the top-confidence ones
+         (fraction = 1 / remaining_steps), filling them with sampled tokens.
+      5. Repeat for n_steps (default 150); return the decoded string.
+"""
 import torch
 import torch.nn.functional as F
 import numpy as np

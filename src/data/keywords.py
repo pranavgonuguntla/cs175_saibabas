@@ -1,3 +1,24 @@
+"""
+data/keywords.py — KeyBERT (and optional RAKE) keyword extraction with disk cache.
+
+KeyBERT is expensive (~50–200 ms per review), so running it on every
+__getitem__ call during training would bottleneck the DataLoader. This module
+solves that by maintaining a persistent MD5-keyed JSON cache at
+cache/keyword_cache.json (path set in config.py).
+
+Workflow:
+  - On import, the cache is loaded from disk into the in-memory dict
+    `keyword_cache`.
+  - get_cached_keywords() checks the cache first; on a miss it runs KeyBERT
+    (or RAKE if use_rake=True), stores the result, and returns it.
+  - flush_keyword_cache() writes the in-memory cache back to disk. This is
+    called automatically at the end of train_mdlm.py so keywords computed
+    during training are available for evaluation without re-extraction.
+
+KeyBERT model: all-MiniLM-L6-v2 (sentence-transformers), extracts unigrams
+and bigrams with English stopword filtering. RAKE is available as an
+alternative via USE_RAKE in config.py but is off by default.
+"""
 import os
 import json
 import hashlib

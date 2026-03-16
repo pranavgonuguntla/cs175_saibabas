@@ -1,7 +1,26 @@
 """
-GPT-2 zero-shot sanity checker.
-Generates reviews from prompts using pretrained GPT-2 to establish a baseline.
-Run: python baseline/sanity_check.py
+baseline/sanity_check.py — Zero-shot GPT-2 sanity check and sentiment steering test.
+
+Runs pretrained (not fine-tuned) GPT-2 on test-set prompts to establish an
+unconditional zero-shot baseline before any fine-tuning. Useful for confirming
+that the prompt format, dataset pipeline, and generation code are all working
+correctly end-to-end.
+
+Two tests are performed:
+
+  1. Zero-shot generation samples
+     Generates reviews for the first NUM_SAMPLES test examples using both
+     sampling (temperature=0.8, top-p=0.95) and greedy decoding, then prints
+     them alongside the true review for qualitative comparison.
+
+  2. Sentiment conditioning test
+     Builds positive and negative prompts for the same set of generic keywords
+     ("food", "service", "atmosphere") and generates from each, showing whether
+     the raw pretrained GPT-2 responds to sentiment conditioning at all (it
+     mostly does not, which motivates fine-tuning).
+
+Run from the project root:
+    python src/baseline/sanity_check.py
 """
 import sys
 import os

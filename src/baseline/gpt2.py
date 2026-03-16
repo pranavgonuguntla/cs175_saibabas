@@ -1,3 +1,31 @@
+"""
+baseline/gpt2.py — GPT-2 inference utilities and dataset classes.
+
+Provides the building blocks for the GPT-2 autoregressive baseline used
+throughout training, evaluation, and sanity checking.
+
+  load_gpt2(model_name, device)
+    Loads a GPT-2 model and tokenizer from a HuggingFace model name or local
+    directory path (e.g., "gpt2" or "gpt2_yelp_finetuned"). Sets pad_token to
+    eos_token (GPT-2 has no pad token by default).
+
+  generate_review_gpt2(prompt, tokenizer, model, ...)
+    Generates one or more review texts from a conditioning prompt string.
+    Formats the prompt as "{prompt}\\n\\nReview:" before encoding, then strips
+    the prompt back out of the decoded output. Supports temperature, top-k,
+    top-p, and greedy decoding.
+
+  GPT2YelpDataset
+    Formats prompted examples for causal LM fine-tuning. Training text is
+    "{prompt}\\n\\nReview: {review}<|endoftext|>". Uses prompt_dropped so the
+    model trains on both conditional (with keywords) and unconditional (NULL
+    prompt, CFG dropout) examples.
+
+  GPT2EvalDataset
+    Minimal dataset for perplexity evaluation: tokenizes the raw review text
+    (no prompt) and returns input_ids for the GPT-2 perplexity loop in
+    evaluate.py.
+"""
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

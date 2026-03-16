@@ -1,6 +1,25 @@
 """
-Fine-tune GPT-2 on the Yelp dataset as a baseline.
-Run: python train_gpt2.py
+train_gpt2.py — Fine-tune GPT-2 on Yelp reviews as the autoregressive baseline.
+
+Fine-tunes the pretrained GPT-2 (117M) model on 50,000 prompted Yelp reviews
+using the HuggingFace Trainer API. The goal is a strong conditional generation
+baseline to compare against the MDLM diffusion model.
+
+Training details:
+  - Dataset: 50k examples from yelp_polarity train split (subset of 560k).
+  - Prompt format: "{sentiment} {keywords}\\n\\nReview: {text}<|endoftext|>"
+  - CFG dropout (15%): some examples use no prompt ("Review: {text}") so
+    the model learns unconditional generation alongside conditional generation.
+  - Optimizer: AdamW via HuggingFace Trainer defaults.
+  - LR: 5e-5, warmup 100 steps, 3 epochs.
+  - Mixed precision (fp16) enabled automatically if CUDA is available.
+  - Best checkpoint is loaded at end of training (load_best_model_at_end=True).
+
+Outputs:
+  - gpt2_yelp_finetuned/ — model weights, tokenizer, and trainer config.
+
+Run from the project root:
+    python src/train_gpt2.py
 """
 import torch
 import numpy as np

@@ -1,0 +1,26 @@
+"""
+evaluation/metrics.py — ROUGE scoring utility.
+
+Wraps the rouge_score library to compute ROUGE-1, ROUGE-2, and ROUGE-L
+F1 scores averaged over a list of reference/hypothesis pairs.
+
+compute_rouge(references, hypotheses) returns a dict:
+    {"rouge1": float, "rouge2": float, "rougeL": float}
+where values are percentages (0–100), consistent with standard reporting.
+
+Used by evaluate.py to measure n-gram overlap between MDLM/GPT-2 generated
+reviews and the corresponding ground-truth reviews from the test set.
+Stemming is enabled by default (use_stemmer=True) to reduce sensitivity to
+morphological variants.
+"""
+from rouge_score import rouge_scorer
+
+
+def compute_rouge(references, hypotheses, use_stemmer=True):
+    scorer = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=use_stemmer)
+    agg = {"rouge1": [], "rouge2": [], "rougeL": []}
+    for ref, hyp in zip(references, hypotheses):
+        s = scorer.score(ref, hyp)
+        for k in agg:
+            agg[k].append(s[k].fmeasure)
+    return {k: sum(v) / len(v) * 100 if v else 0.0 for k, v in agg.items()}

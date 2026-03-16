@@ -1,3 +1,25 @@
+"""
+data/prompt.py — Prompt construction from extracted keywords and sentiment label.
+
+Converts a list of KeyBERT keywords and an optional Yelp polarity label
+(0=negative, 1=positive) into a natural-language conditioning string used by
+both the MDLM diffusion model and the GPT-2 baseline.
+
+Default (natural_style=True) format:
+    "positive great food friendly staff"
+    "negative dry service korean bbq"
+
+Structured format (natural_style=False, used for debugging):
+    "PROMPT: sentiment=positive; keywords=great food, friendly, staff"
+
+The same build_prompt() call is used during:
+  - Dataset construction (YelpPromptedDataset.__getitem__)
+  - Interactive generation (generate.py)
+  - Evaluation sampling (evaluate.py, plot_guidance.py)
+  - Sanity checks (baseline/sanity_check.py)
+
+This ensures the conditioning format is identical at train and inference time.
+"""
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

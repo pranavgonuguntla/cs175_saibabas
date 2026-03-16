@@ -1,3 +1,28 @@
+"""
+data/dataset.py — PyTorch Dataset classes and DataLoader helpers for Yelp reviews.
+
+Provides three dataset classes:
+
+  YelpPromptedDataset
+    Wraps a HuggingFace yelp_polarity split. On each __getitem__ it runs
+    preprocessing, retrieves cached keywords, builds the conditioning prompt,
+    and applies CFG dropout (replaces the prompt with <NULL> with probability
+    cfg_drop_prob). Returns plain Python dicts with keys: prompt,
+    prompt_dropped, review, label, keywords.
+
+  MDLMYelpDataset
+    Wraps a YelpPromptedDataset and tokenizes both the review (input_ids,
+    attention_mask) and the prompt (keyword_ids) using the MDLM tokenizer
+    (GPT-2 BPE + [MASK] + <PAD>). This is the dataset fed to the MDLM
+    training and evaluation loops.
+
+  GPT2YelpDataset / GPT2EvalDataset  (in baseline/gpt2.py)
+    Equivalent wrappers for the GPT-2 fine-tuning and perplexity evaluation
+    loops.
+
+build_splits_for_sedd() is the single entry point used by all scripts to
+construct train and test splits with consistent settings.
+"""
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
